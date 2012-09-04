@@ -6,7 +6,7 @@ use Exporter ();
 use Carp qw(croak);
 use vars qw($VERSION @ISA @EXPORT);
 
-$VERSION = "0.01";
+$VERSION = "0.02";
 @ISA = qw(Exporter);
 @EXPORT = qw(indexf);
 
@@ -37,7 +37,7 @@ File::Index - an index function for files
   use File::Index;
   open(FILE,$myfile);
   my $pos=indexf(*FILE,"Foo");
-  print "Foo found at position: $pos\n" if $n > -1;
+  print "Foo found at position: $pos\n" if $pos > -1;
 
 =head1 DESCRIPTION
 
