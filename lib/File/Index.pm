@@ -6,7 +6,7 @@ use Exporter ();
 use Carp qw(croak);
 use vars qw($VERSION @ISA @EXPORT);
 
-$VERSION = "0.02";
+$VERSION = "0.03";
 @ISA = qw(Exporter);
 @EXPORT = qw(indexf);
 
@@ -15,15 +15,27 @@ sub indexf {
   my $substring=shift;
   my $start=shift||0;
   my $bufferSize=shift||131072;
+  my $k=length($substring);
   my $offset=0;
+  my $s="";
   croak "BufferSize must not be less than substring length"
-    if $bufferSize<length($substring);
-  while ( seek($filehandle,$start+$offset,0) ) {
-    my $buffer;
-    if ( read($filehandle,$buffer,$bufferSize) >= length($substring) ) {
-      if ( (my $n=index($buffer,$substring))>-1 ) { return($n+$offset+$start) }
-      $offset+=($bufferSize-length($substring)+1)
-    } else { return(-1) }
+    if $bufferSize<$k;
+  # Seek to start point; use successive reads if file isn't seekable 
+  if ( ! seek($filehandle,$start,0) ) {
+    for (my $j=0;$j<int($start/$bufferSize);$j++) {
+      read($filehandle,$s,$bufferSize) or return(-1)
+    }
+    if ( $start%($bufferSize) > 0 ) {
+      read($filehandle,$s,$start%($bufferSize)) or return(-1)
+    }
+    $s=""
+  }
+  # Read and append to end of preserved string
+  while ( read($filehandle,substr($s,length($s)),$bufferSize) > 0 ) {
+    if ( (my $n=index($s,$substring)) > -1 ) { return($n+$offset+$start) }
+    $offset+=(length($s)-$k+1);
+    # Preserve last ($k-1) characters
+    $s=substr($s,-$k+1)
   }
   return(-1)
 }

@@ -6,3 +6,6 @@ Revision history for File-Index
 0.02    2012-09-04/11:45
         Minor documentation fix.
 
+0.03    2012-09-07/12:15
+        Enhanced so that it works with an unseekable file.
+
