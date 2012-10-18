@@ -6,7 +6,7 @@ use Exporter ();
 use Carp qw(croak);
 use vars qw($VERSION @ISA @EXPORT);
 
-$VERSION = "0.03";
+$VERSION = "0.04";
 @ISA = qw(Exporter);
 @EXPORT = qw(indexf);
 
@@ -40,6 +40,32 @@ sub indexf {
   return(-1)
 }
 
+sub rindexf {
+  my $filehandle=shift;
+  my $substring=shift;
+  my $beg=shift||-1;
+  my $bufferSize=shift||131072;
+  my $k=length($substring);
+  my $offset=0;
+  my $s="";
+  my $match=-1;
+  croak "BufferSize must not be less than substring length" if $bufferSize<$k;
+  seek($filehandle,0,0);
+  while (read($filehandle,substr($s,length($s)),$bufferSize)) {
+    # Read and append to end of preserved string
+    my $j=0;
+    while ( (my $n=index($s,$substring,$j++)) > -1 ) {
+      if ( ($beg>=0) && (($n+$offset)>$beg) ) { return($match) }
+      else { $match=$n+$offset }
+    }
+    $offset+=(length($s)-$k+1);
+    # Preserve last ($k-1) characters
+    $s=substr($s,-$k+1)
+  }
+  # Return last match-position
+  return($match)
+}
+
 =head1 NAME
 
 File::Index - an index function for files
@@ -50,11 +76,14 @@ File::Index - an index function for files
   open(FILE,$myfile);
   my $pos=indexf(*FILE,"Foo");
   print "Foo found at position: $pos\n" if $pos > -1;
+  open(FILE2,$myfile2);
+  my $pos2=rindexf(*FILE2,"Bar");
+  print "Bar found at position: $pos2\n" if $pos2 > -1;
 
 =head1 DESCRIPTION
 
-This module provides an indexf function which operates on files in the
-same way that the index function operates on strings. It can be used where
+This module provides the indexf and rindexf functions which operate on files in the
+same way that the index and rindex functions operate on strings. It can be used where
 memory limitations prohibit the slurping of an entire file.
 
 =over 4
@@ -65,6 +94,17 @@ Starts at the position specified by '$start' (or at the beginning) of
 the file associated with filehandle 'FH', and returns the absolute start
 position of the string '$string'.
 The buffer-size can be adjusted by specifying '$buffersize'.
+
+=item C<rindexf( *FH, $string, [$position], [$buffersize] )>
+
+Returns the position of the last occurrence of '$string' in the file
+associated with filehandle 'FH'. If '$position' is specified, returns
+the last occurrence beginning at or before '$position'.
+
+The buffer-size can be adjusted by specifying '$buffersize'. If you
+wish to specify a '$buffersize' value without specifying a '$position'
+value, use a negative value (e.g. '-1') for the latter.
+
 
 =back
 
