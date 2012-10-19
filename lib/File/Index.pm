@@ -6,7 +6,7 @@ use Exporter ();
 use Carp qw(croak);
 use vars qw($VERSION @ISA @EXPORT);
 
-$VERSION = "0.04";
+$VERSION = "0.05";
 @ISA = qw(Exporter);
 @EXPORT = qw(indexf);
 
@@ -54,9 +54,9 @@ sub rindexf {
   while (read($filehandle,substr($s,length($s)),$bufferSize)) {
     # Read and append to end of preserved string
     my $j=0;
-    while ( (my $n=index($s,$substring,$j++)) > -1 ) {
+    while ( (my $n=index($s,$substring,$j)) > -1 ) {
       if ( ($beg>=0) && (($n+$offset)>$beg) ) { return($match) }
-      else { $match=$n+$offset }
+      else { $match=$n+$offset; $j=$n+1 }
     }
     $offset+=(length($s)-$k+1);
     # Preserve last ($k-1) characters

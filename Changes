@@ -12,3 +12,6 @@ Revision history for File-Index
 0.04    2012-10-19/10:15
         Added the 'rindexf' function.
 
+0.05    2012-10-20/07:00
+        Enhanced 'rindexf' efficiency.
+

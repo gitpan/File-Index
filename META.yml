@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               File-Index
-version:            0.04
+version:            0.05
 abstract:           an index function for files
 author:
     - Graham Jenkins <grahjenk@cpan.org>
