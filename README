@@ -1,4 +1,4 @@
-File::Index Version 0.04
+File::Index Version 0.06
 
 This module provides the 'indexf' and 'rindexf' functions which operate on files in the 
 same way that the 'index' and 'rindex' functions operate on strings.  It can be used
